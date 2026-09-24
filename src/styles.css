@@ -448,7 +448,7 @@ a:focus-visible {
 }
 
 .face-frame {
-  --stimulus-size: min(78vw, 45dvh, 360px);
+  --stimulus-size: min(74vw, 42dvh, 340px);
 
   position: absolute;
   z-index: 1;
@@ -933,7 +933,7 @@ a:focus-visible {
   }
 
   .face-frame {
-    --stimulus-size: min(72vw, 40dvh, 260px);
+    --stimulus-size: min(70vw, 38dvh, 250px);
   }
 
   .screen--results {
