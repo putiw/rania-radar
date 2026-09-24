@@ -15,7 +15,7 @@ const appAssetUrl = (path) => new URL(path, APP_BASE_URL).href;
 // with missing or misleading extensions, so all browser-facing copies are
 // normalized to WebP during import.
 const FACE_GROUPS = [
-  { slug: "rania", name: "Rania", count: 14, isTarget: true, numberFirst: true },
+  { slug: "rania", name: "Rania", count: 16, isTarget: true, numberFirst: true },
   { slug: "aysha", name: "Aysha", count: 2 },
   { slug: "birol", name: "Birol", count: 7 },
   { slug: "dana", name: "Dana", count: 2 },
@@ -59,7 +59,7 @@ const PEOPLE = FACE_GROUPS.flatMap(
 
 const targetPhotoCount = PEOPLE.filter((person) => person.isTarget).length;
 const config = DEFAULT_CONFIG;
-const FACE_ASSET_VERSION = "photos-5";
+const FACE_ASSET_VERSION = "photos-6";
 const RUN_HISTORY_KEY = "rania-radar-run-history-v3";
 const RUN_HISTORY_VERSION = 3;
 
@@ -97,10 +97,13 @@ const elements = {
   stimulusCount: document.querySelector("#stimulus-count"),
   estimatedDuration: document.querySelector("#estimated-duration"),
   targetCount: document.querySelector("#target-count"),
+  confettiLayer: document.querySelector("#confetti-layer"),
+  completionSound: document.querySelector("#completion-sound"),
 };
 
 let installPrompt = null;
 let toastTimer = null;
+let celebrationTimer = null;
 let runHistory = loadRunHistory();
 let session = createEmptySession();
 
@@ -183,7 +186,7 @@ function avatarSource(person) {
 
 function mountExperimentSummary() {
   const averageTrialMs =
-    (config.minWaitMs + config.maxWaitMs) / 2 + config.displayMs + 300;
+    (config.minWaitMs + config.maxWaitMs) / 2 + config.responseWindowMs;
   const estimatedMinutes = Math.max(
     1,
     Math.round((averageTrialMs * config.totalTrials) / 60_000),
@@ -243,11 +246,59 @@ function showFixationFeedback(outcome, message) {
   elements.gameStatus.textContent = message ?? feedback.message;
 }
 
+function primeCompletionSound() {
+  const sound = elements.completionSound;
+  if (!sound || sound.dataset.primed === "true") return;
+  sound.volume = 0;
+  const playAttempt = sound.play();
+  playAttempt
+    ?.then(() => {
+      sound.pause();
+      sound.currentTime = 0;
+      sound.volume = 0.75;
+      sound.dataset.primed = "true";
+    })
+    .catch(() => {
+      sound.volume = 0.75;
+    });
+}
+
+function playRunCelebration() {
+  window.clearTimeout(celebrationTimer);
+  const sound = elements.completionSound;
+  if (sound) {
+    sound.currentTime = 0;
+    sound.volume = 0.75;
+    sound.play().catch(() => undefined);
+  }
+
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const colors = ["#f4c542", "#f7f7f5", "#171716", "#8b8b87", "#d36b5f"];
+  const pieces = Array.from({ length: 72 }, (_, index) => {
+    const piece = document.createElement("span");
+    piece.className = "confetti-piece";
+    piece.style.setProperty("--x", `${Math.random() * 100}vw`);
+    piece.style.setProperty("--drift", `${Math.round(Math.random() * 140 - 70)}px`);
+    piece.style.setProperty("--spin", `${Math.round(Math.random() * 900 + 360)}deg`);
+    piece.style.setProperty("--delay", `${Math.random() * 700}ms`);
+    piece.style.setProperty("--duration", `${Math.round(Math.random() * 1600 + 2400)}ms`);
+    piece.style.setProperty("--color", colors[index % colors.length]);
+    return piece;
+  });
+  elements.confettiLayer.replaceChildren(...pieces);
+  elements.confettiLayer.classList.add("is-active");
+  celebrationTimer = window.setTimeout(() => {
+    elements.confettiLayer.classList.remove("is-active");
+    elements.confettiLayer.replaceChildren();
+  }, 4800);
+}
+
 function delay(ms) {
   return new Promise((resolve) => window.setTimeout(resolve, ms));
 }
 
 async function startExperiment() {
+  primeCompletionSound();
   const runId = session.runId + 1;
   clearSessionTimer();
   session = {
@@ -439,6 +490,7 @@ function finishExperiment() {
   session.completedRunNumber = runNumber;
   renderResults(session.lastSummary, cumulativeSummary, runNumber);
   showScreen("results");
+  playRunCelebration();
 }
 
 function renderStatGrid(grid, summary) {

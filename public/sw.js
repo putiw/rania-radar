@@ -1,10 +1,10 @@
 const CACHE_PREFIX = "rania-radar-";
-const CACHE_NAME = `${CACHE_PREFIX}v19`;
-const FACE_ASSET_VERSION = "photos-5";
+const CACHE_NAME = `${CACHE_PREFIX}v20`;
+const FACE_ASSET_VERSION = "photos-6";
 const APP_ROOT = new URL("./", self.registration.scope);
 const appUrl = (path = "") => new URL(path, APP_ROOT).href;
 const FACE_GROUPS = [
-  ["rania", 14, true],
+  ["rania", 16, true],
   ["aysha", 2],
   ["birol", 7],
   ["dana", 2],
@@ -46,6 +46,7 @@ const APP_SHELL = [
   "icons/icon-512.png",
   "icons/icon-maskable-512.png",
   "noise-1f-full.png",
+  "sounds/exercise-complete-day.wav",
   ...FACE_ASSETS.map((path) => `${path}?v=${FACE_ASSET_VERSION}`),
 ].map(appUrl);
 

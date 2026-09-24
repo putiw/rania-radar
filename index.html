@@ -45,7 +45,7 @@
         <div class="study-preview" aria-label="Experiment instructions and target reference">
           <div class="target-card">
             <p class="target-card__heading">Target reference</p>
-            <div class="target-card__avatar" data-person="rania-1"></div>
+            <div class="target-card__avatar" data-person="rania-14"></div>
             <div>
               <small>Respond to</small>
               <strong>Rania</strong>
@@ -110,6 +110,14 @@
       </section>
 
       <section class="screen screen--results" id="results-screen" aria-labelledby="results-title" hidden>
+        <div class="farewell-card">
+          <span aria-hidden="true">💛</span>
+          <div>
+            <h2>We’ll miss you, Rania.</h2>
+            <p>Wherever you go, we’ll always spot you in a crowd.</p>
+          </div>
+        </div>
+
         <div class="result-heading">
           <span class="result-badge" aria-hidden="true">END</span>
           <p class="eyebrow" id="result-run-label">Run complete</p>
@@ -151,14 +159,6 @@
           <p class="chart-note" id="chart-note"></p>
         </section>
 
-        <div class="farewell-card">
-          <span aria-hidden="true">💛</span>
-          <div>
-            <h2>We’ll miss you, Rania.</h2>
-            <p>Wherever you go, we’ll always spot you in a crowd.</p>
-          </div>
-        </div>
-
         <div class="result-actions">
           <button class="primary-button" id="restart-button" type="button">
             <span>Run another 25</span><span aria-hidden="true">↻</span>
@@ -169,6 +169,13 @@
     </main>
 
     <footer class="site-footer">Personal reaction-time task · Not a clinical measure</footer>
+    <div class="confetti-layer" id="confetti-layer" aria-hidden="true"></div>
+    <audio
+      id="completion-sound"
+      src="/sounds/exercise-complete-day.wav"
+      preload="auto"
+      hidden
+    ></audio>
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
     <script type="module" src="/src/main.js"></script>
