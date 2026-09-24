@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#d4d4d1" />
+    <meta
+      name="description"
+      content="Rania Radar — a tiny reaction-time game made with love for Rania."
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Rania Radar" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+    <link rel="stylesheet" href="/src/styles.css" />
+    <title>Rania Radar</title>
+  </head>
+  <body>
+    <div class="ambient ambient--one" aria-hidden="true"></div>
+    <div class="ambient ambient--two" aria-hidden="true"></div>
+
+    <header class="site-header">
+      <a class="brand" href="#" aria-label="Rania Radar home">
+        <span class="brand__mark" aria-hidden="true">RT</span>
+        <span>Rania Detection Task</span>
+      </a>
+      <button class="install-button" id="install-button" type="button" hidden>
+        Install app
+      </button>
+    </header>
+
+    <main class="app-shell">
+      <section class="screen screen--welcome" id="welcome-screen" aria-labelledby="welcome-title">
+        <div class="welcome-copy">
+          <p class="eyebrow">Target detection experiment · 25-trial runs</p>
+          <h1 id="welcome-title">Rania detection task</h1>
+          <p class="intro">
+            A series of faces will appear one at a time. Press the response button only
+            when the person shown is Rania.
+          </p>
+        </div>
+
+        <div class="study-preview" aria-label="Experiment instructions and target reference">
+          <div class="target-card">
+            <p class="target-card__heading">Target reference</p>
+            <div class="target-card__avatar" data-person="rania-1"></div>
+            <div>
+              <small>Respond to</small>
+              <strong>Rania</strong>
+            </div>
+          </div>
+          <div class="protocol">
+            <p class="protocol__heading">Procedure</p>
+            <ol>
+              <li>Look at the fixation cross.</li>
+              <li>Inspect each face as it appears.</li>
+              <li>Press <strong>RANIA</strong> only for the target.</li>
+            </ol>
+            <p>Rania will appear in several different photographs.</p>
+          </div>
+        </div>
+
+        <div class="experiment-note">
+          <div><strong id="stimulus-count">25</strong><span>photos per run</span></div>
+          <div><strong id="estimated-duration">~1 min</strong><span>duration</span></div>
+          <div><strong id="target-count">5</strong><span>target trials</span></div>
+        </div>
+
+        <div class="welcome-actions">
+          <button class="primary-button" id="start-button" type="button">
+            <span>Begin experiment</span>
+            <span aria-hidden="true">→</span>
+          </button>
+          <p>Keep one thumb ready. Do not press during the fixation cross.</p>
+        </div>
+      </section>
+
+      <section class="screen screen--game" id="game-screen" aria-labelledby="game-title" hidden>
+        <h1 class="sr-only" id="game-title">Rania detection experiment</h1>
+
+        <div class="game-progress">
+          <div class="game-progress__copy">
+            <span id="trial-label">Get ready</span>
+            <span id="progress-percent">0%</span>
+          </div>
+          <div class="progress-track" aria-hidden="true">
+            <span id="progress-bar"></span>
+          </div>
+        </div>
+
+        <div class="stimulus-zone" id="stimulus-zone">
+          <div class="stimulus-halo" aria-hidden="true"></div>
+          <div class="cue" id="cue" aria-hidden="true">3</div>
+          <div class="face-frame" id="face-frame">
+            <img id="face-image" alt="A portrait to identify" draggable="false" />
+          </div>
+          <p class="game-status" id="game-status" role="status" aria-live="polite">
+            Get ready…
+          </p>
+        </div>
+
+        <div class="detector-dock">
+          <button class="detect-button" id="detect-button" type="button">
+            <span>RANIA</span>
+          </button>
+          <p>Response key</p>
+        </div>
+      </section>
+
+      <section class="screen screen--results" id="results-screen" aria-labelledby="results-title" hidden>
+        <div class="result-heading">
+          <span class="result-badge" aria-hidden="true">END</span>
+          <p class="eyebrow" id="result-run-label">Run complete</p>
+          <h1 id="results-title">Results</h1>
+          <p id="result-headline">Response-time summary.</p>
+        </div>
+
+        <section class="result-section" aria-labelledby="run-results-title">
+          <div class="result-section__heading">
+            <div>
+              <p class="eyebrow">Latest completed run</p>
+              <h2 id="run-results-title">This run</h2>
+            </div>
+            <span>25 trials</span>
+          </div>
+          <div class="stat-grid" id="run-stat-grid"></div>
+        </section>
+
+        <section class="result-section" aria-labelledby="cumulative-results-title">
+          <div class="result-section__heading">
+            <div>
+              <p class="eyebrow">Saved on this device</p>
+              <h2 id="cumulative-results-title">Cumulative results</h2>
+            </div>
+            <span id="cumulative-run-count">1 run</span>
+          </div>
+          <div class="stat-grid" id="cumulative-stat-grid"></div>
+        </section>
+
+        <section class="chart-card" aria-labelledby="chart-title">
+          <div class="chart-card__heading">
+            <div>
+              <p class="eyebrow">All completed runs</p>
+              <h2 id="chart-title">Cumulative response-time distribution</h2>
+            </div>
+            <span>milliseconds</span>
+          </div>
+          <div class="histogram" id="histogram" role="img"></div>
+          <p class="chart-note" id="chart-note"></p>
+        </section>
+
+        <div class="farewell-card">
+          <span aria-hidden="true">💛</span>
+          <div>
+            <h2>We’ll miss you, Rania.</h2>
+            <p>Wherever you go, we’ll always spot you in a crowd.</p>
+          </div>
+        </div>
+
+        <div class="result-actions">
+          <button class="primary-button" id="restart-button" type="button">
+            <span>Run another 25</span><span aria-hidden="true">↻</span>
+          </button>
+          <button class="secondary-button" id="share-button" type="button">Share the love</button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">Personal reaction-time task · Not a clinical measure</footer>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
