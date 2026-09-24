@@ -3,6 +3,7 @@ import {
   buildHistogram,
   buildTrials,
   combineSummaries,
+  feedbackForOutcome,
   randomWait,
   summarizeResults,
 } from "./game.js";
@@ -30,7 +31,7 @@ const FACE_GROUPS = [
   { slug: "maitha", name: "Maitha", count: 3 },
   { slug: "michele", name: "Michele", count: 1 },
   { slug: "noha", name: "Noha", count: 2 },
-  { slug: "puti", name: "Puti", count: 8 },
+  { slug: "puti", name: "Puti", count: 7, photoNumbers: [1, 2, 3, 4, 6, 8, 9] },
   { slug: "raphael", name: "Raphael", count: 4 },
   { slug: "shanshan", name: "Shanshan", count: 3 },
   { slug: "soumen", name: "Soumen", count: 7 },
@@ -42,22 +43,23 @@ const FACE_GROUPS = [
 ];
 
 const PEOPLE = FACE_GROUPS.flatMap(
-  ({ slug, name, count, isTarget = false, numberFirst = false }) =>
-    Array.from({ length: count }, (_, index) => {
-      const photoNumber = index + 1;
-      const fileSuffix = photoNumber === 1 && !numberFirst ? "" : photoNumber;
-      return {
-        id: `${slug}-${photoNumber}`,
-        name,
-        image: `faces/${slug}${fileSuffix}.webp`,
-        isTarget,
-      };
-    }),
+  ({ slug, name, count, photoNumbers, isTarget = false, numberFirst = false }) =>
+    (photoNumbers ?? Array.from({ length: count }, (_, index) => index + 1)).map(
+      (photoNumber) => {
+        const fileSuffix = photoNumber === 1 && !numberFirst ? "" : photoNumber;
+        return {
+          id: `${slug}-${photoNumber}`,
+          name,
+          image: `faces/${slug}${fileSuffix}.webp`,
+          isTarget,
+        };
+      },
+    ),
 );
 
 const targetPhotoCount = PEOPLE.filter((person) => person.isTarget).length;
 const config = DEFAULT_CONFIG;
-const FACE_ASSET_VERSION = "photos-4";
+const FACE_ASSET_VERSION = "photos-5";
 const RUN_HISTORY_KEY = "rania-radar-run-history-v3";
 const RUN_HISTORY_VERSION = 3;
 
@@ -215,6 +217,7 @@ function showScreen(name) {
   Object.entries(screens).forEach(([screenName, screen]) => {
     screen.hidden = screenName !== name;
   });
+  document.body.dataset.screen = name;
   document.body.classList.toggle("is-playing", name === "game");
   window.scrollTo({ top: 0, behavior: "instant" });
 }
@@ -222,6 +225,19 @@ function showScreen(name) {
 function clearSessionTimer() {
   if (session.timer) window.clearTimeout(session.timer);
   session.timer = null;
+}
+
+function resetFixationFeedback() {
+  elements.cue.classList.remove("is-correct", "is-incorrect");
+}
+
+function showFixationFeedback(outcome, message) {
+  const feedback = feedbackForOutcome(outcome);
+  elements.cue.classList.toggle("is-correct", feedback.isCorrect);
+  elements.cue.classList.toggle("is-incorrect", !feedback.isCorrect);
+  elements.cue.hidden = false;
+  elements.cue.textContent = "+";
+  elements.gameStatus.textContent = message ?? feedback.message;
 }
 
 function delay(ms) {
@@ -252,6 +268,7 @@ async function startExperiment() {
   elements.gameStatus.textContent = "Remember: tap only for Rania";
   elements.cue.hidden = false;
   elements.cue.textContent = "+";
+  resetFixationFeedback();
 
   await preloadAvatars(session.trials.map((trial) => getPerson(trial.personId)));
   if (session.runId !== runId) return;
@@ -286,6 +303,7 @@ function prepareTrial(runId = session.runId) {
   session.response = null;
   elements.faceFrame.classList.remove("is-visible");
   elements.detectButton.setAttribute("aria-disabled", "false");
+  resetFixationFeedback();
   elements.cue.hidden = false;
   elements.cue.textContent = "+";
   elements.gameStatus.textContent = "Keep your eyes on the fixation cross";
@@ -302,12 +320,13 @@ function showStimulus(runId) {
   const person = getPerson(trial.personId);
 
   elements.faceImage.src = avatarSource(person);
-  elements.cue.hidden = true;
+  elements.cue.hidden = false;
+  elements.cue.textContent = "+";
   elements.gameStatus.textContent = "";
   elements.faceFrame.classList.add("is-visible");
 
   window.requestAnimationFrame(() => {
-    if (runId !== session.runId) return;
+    if (runId !== session.runId || session.phase !== "waiting") return;
     session.phase = "stimulus";
     session.shownAt = performance.now();
     session.timer = window.setTimeout(() => {
@@ -334,7 +353,7 @@ function handleDetection() {
   if (reactionMs < config.minValidReactionMs) {
     session.falseStarts += 1;
     session.response = { outcome: "anticipation", reactionMs };
-    elements.gameStatus.textContent = "Response too early";
+    showFixationFeedback("anticipation", "Response too early");
     elements.detectButton.setAttribute("aria-disabled", "true");
     return;
   }
@@ -343,7 +362,7 @@ function handleDetection() {
     outcome: trial.isTarget ? "hit" : "false-alarm",
     reactionMs,
   };
-  elements.gameStatus.textContent = "Response recorded";
+  showFixationFeedback(session.response.outcome);
   elements.detectButton.setAttribute("aria-disabled", "true");
 }
 
@@ -353,9 +372,8 @@ function registerFalseStart(message) {
   session.phase = "feedback";
   session.falseStarts += 1;
   elements.faceFrame.classList.remove("is-visible");
-  elements.cue.hidden = false;
-  elements.cue.textContent = "+";
-  elements.gameStatus.textContent = message;
+  showFixationFeedback("anticipation", message);
+  elements.detectButton.setAttribute("aria-disabled", "true");
   session.timer = window.setTimeout(() => prepareTrial(runId), 650);
 }
 
@@ -366,10 +384,8 @@ function completeTrial(outcome, reactionMs = null) {
   clearSessionTimer();
   session.phase = "feedback";
   elements.faceFrame.classList.remove("is-visible");
-  elements.cue.hidden = false;
-  elements.cue.textContent = "+";
-  elements.gameStatus.textContent = "";
-  elements.detectButton.setAttribute("aria-disabled", "false");
+  showFixationFeedback(outcome);
+  elements.detectButton.setAttribute("aria-disabled", "true");
 
   session.results.push({
     trialId: trial.id,
@@ -522,6 +538,7 @@ function handleVisibilityChange() {
   clearSessionTimer();
   session.phase = "paused";
   elements.faceFrame.classList.remove("is-visible");
+  resetFixationFeedback();
   elements.cue.hidden = false;
   elements.cue.textContent = "Paused";
   elements.gameStatus.textContent = "Come back when you’re ready";

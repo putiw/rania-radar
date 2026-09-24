@@ -3,9 +3,21 @@ export const DEFAULT_CONFIG = Object.freeze({
   targetTrials: 5,
   minWaitMs: 700,
   maxWaitMs: 1400,
-  displayMs: 1300,
+  displayMs: 500,
   minValidReactionMs: 120,
 });
+
+const OUTCOME_FEEDBACK = Object.freeze({
+  hit: Object.freeze({ isCorrect: true, message: "Correct — Rania detected" }),
+  "correct-rejection": Object.freeze({ isCorrect: true, message: "Correct — not Rania" }),
+  "false-alarm": Object.freeze({ isCorrect: false, message: "Incorrect — not Rania" }),
+  miss: Object.freeze({ isCorrect: false, message: "Missed Rania" }),
+  anticipation: Object.freeze({ isCorrect: false, message: "Too early" }),
+});
+
+export function feedbackForOutcome(outcome) {
+  return OUTCOME_FEEDBACK[outcome] ?? { isCorrect: false, message: "Incorrect" };
+}
 
 function shuffled(items, random) {
   const copy = [...items];

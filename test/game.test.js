@@ -1,9 +1,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
+  DEFAULT_CONFIG,
   buildHistogram,
   buildTrials,
   combineSummaries,
+  feedbackForOutcome,
   median,
   summarizeResults,
 } from "../src/game.js";
@@ -69,7 +71,7 @@ test("buildTrials selects 25 unique photos from the larger stimulus library", ()
       id: `rania-${index + 1}`,
       isTarget: true,
     })),
-    ...Array.from({ length: 96 }, (_, index) => ({
+    ...Array.from({ length: 95 }, (_, index) => ({
       id: `friend-${index + 1}`,
       isTarget: false,
     })),
@@ -86,6 +88,24 @@ test("buildTrials selects 25 unique photos from the larger stimulus library", ()
   assert.equal(trials.filter((trial) => trial.isTarget).length, 5);
   assert.equal(trials.filter((trial) => !trial.isTarget).length, 20);
   assert.equal(new Set(trials.map((trial) => trial.personId)).size, 25);
+});
+
+test("stimuli are displayed for exactly 500 milliseconds", () => {
+  assert.equal(DEFAULT_CONFIG.displayMs, 500);
+});
+
+test("outcome feedback distinguishes correct and incorrect responses", () => {
+  assert.deepEqual(feedbackForOutcome("hit"), {
+    isCorrect: true,
+    message: "Correct — Rania detected",
+  });
+  assert.deepEqual(feedbackForOutcome("correct-rejection"), {
+    isCorrect: true,
+    message: "Correct — not Rania",
+  });
+  assert.equal(feedbackForOutcome("false-alarm").isCorrect, false);
+  assert.equal(feedbackForOutcome("miss").isCorrect, false);
+  assert.equal(feedbackForOutcome("anticipation").isCorrect, false);
 });
 
 test("buildTrials remains bounded with a non-random generator", () => {

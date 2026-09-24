@@ -1,6 +1,6 @@
 const CACHE_PREFIX = "rania-radar-";
-const CACHE_NAME = `${CACHE_PREFIX}v15`;
-const FACE_ASSET_VERSION = "photos-4";
+const CACHE_NAME = `${CACHE_PREFIX}v16`;
+const FACE_ASSET_VERSION = "photos-5";
 const APP_ROOT = new URL("./", self.registration.scope);
 const appUrl = (path = "") => new URL(path, APP_ROOT).href;
 const FACE_GROUPS = [
@@ -20,7 +20,7 @@ const FACE_GROUPS = [
   ["maitha", 3],
   ["michele", 1],
   ["noha", 2],
-  ["puti", 8],
+  ["puti", 7, false, [1, 2, 3, 4, 6, 8, 9]],
   ["raphael", 4],
   ["shanshan", 3],
   ["soumen", 7],
@@ -30,12 +30,14 @@ const FACE_GROUPS = [
   ["victor", 2],
   ["zinong", 2],
 ];
-const FACE_ASSETS = FACE_GROUPS.flatMap(([slug, count, numberFirst = false]) =>
-  Array.from({ length: count }, (_, index) => {
-    const photoNumber = index + 1;
-    const fileSuffix = photoNumber === 1 && !numberFirst ? "" : photoNumber;
-    return `faces/${slug}${fileSuffix}.webp`;
-  }),
+const FACE_ASSETS = FACE_GROUPS.flatMap(
+  ([slug, count, numberFirst = false, explicitPhotoNumbers]) =>
+    (explicitPhotoNumbers ?? Array.from({ length: count }, (_, index) => index + 1)).map(
+      (photoNumber) => {
+        const fileSuffix = photoNumber === 1 && !numberFirst ? "" : photoNumber;
+        return `faces/${slug}${fileSuffix}.webp`;
+      },
+    ),
 );
 const APP_SHELL = [
   "manifest.webmanifest",

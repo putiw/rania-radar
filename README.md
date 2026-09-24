@@ -1,6 +1,6 @@
 # Rania Radar
 
-A small, phone-first reaction-time experiment made as a goodbye gift for Rania. Each run selects 25 unique photos from the 110-photo library: five randomly selected Rania targets and 20 randomly selected distractors. The results screen separates the latest run from cumulative results saved in that browser/PWA installation, and the histogram uses cumulative target responses only.
+A small, phone-first reaction-time experiment made as a goodbye gift for Rania. Each run selects 25 unique photos from the 109-photo library: five randomly selected Rania targets and 20 randomly selected distractors. Each face is shown for 500 ms. The results screen separates the latest run from cumulative results saved in that browser/PWA installation, and the histogram uses cumulative target responses only.
 
 ## Run it locally
 
