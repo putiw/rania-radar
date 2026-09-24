@@ -14,16 +14,16 @@ const appAssetUrl = (path) => new URL(path, APP_BASE_URL).href;
 // with missing or misleading extensions, so all browser-facing copies are
 // normalized to WebP during import.
 const FACE_GROUPS = [
-  { slug: "rania", name: "Rania", count: 9, isTarget: true, numberFirst: true },
+  { slug: "rania", name: "Rania", count: 14, isTarget: true, numberFirst: true },
   { slug: "aysha", name: "Aysha", count: 2 },
   { slug: "birol", name: "Birol", count: 7 },
   { slug: "dana", name: "Dana", count: 2 },
   { slug: "gaya", name: "Gaya", count: 4 },
-  { slug: "hadi", name: "Hadi", count: 3 },
+  { slug: "hadi", name: "Hadi", count: 8 },
   { slug: "haidee", name: "Haidee", count: 7 },
   { slug: "hamster", name: "Hamster", count: 1 },
-  { slug: "hannah", name: "Hannah", count: 3 },
-  { slug: "hilton", name: "Hilton", count: 1 },
+  { slug: "hannah", name: "Hannah", count: 5 },
+  { slug: "hilton", name: "Hilton", count: 3 },
   { slug: "jenna", name: "Jenna", count: 2 },
   { slug: "karima", name: "Karima", count: 4 },
   { slug: "lexi", name: "Lexi", count: 3 },
@@ -33,10 +33,11 @@ const FACE_GROUPS = [
   { slug: "puti", name: "Puti", count: 8 },
   { slug: "raphael", name: "Raphael", count: 4 },
   { slug: "shanshan", name: "Shanshan", count: 3 },
-  { slug: "soumen", name: "Soumen", count: 3 },
+  { slug: "soumen", name: "Soumen", count: 7 },
   { slug: "steve", name: "Steve", count: 4 },
   { slug: "teo", name: "Teo", count: 9 },
-  { slug: "victor", name: "Victor", count: 1 },
+  { slug: "toni", name: "Toni", count: 3 },
+  { slug: "victor", name: "Victor", count: 2 },
   { slug: "zinong", name: "Zinong", count: 2 },
 ];
 
@@ -56,7 +57,7 @@ const PEOPLE = FACE_GROUPS.flatMap(
 
 const targetPhotoCount = PEOPLE.filter((person) => person.isTarget).length;
 const config = DEFAULT_CONFIG;
-const FACE_ASSET_VERSION = "photos-3";
+const FACE_ASSET_VERSION = "photos-4";
 const RUN_HISTORY_KEY = "rania-radar-run-history-v3";
 const RUN_HISTORY_VERSION = 3;
 

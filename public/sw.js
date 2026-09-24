@@ -1,19 +1,19 @@
 const CACHE_PREFIX = "rania-radar-";
-const CACHE_NAME = `${CACHE_PREFIX}v14`;
-const FACE_ASSET_VERSION = "photos-3";
+const CACHE_NAME = `${CACHE_PREFIX}v15`;
+const FACE_ASSET_VERSION = "photos-4";
 const APP_ROOT = new URL("./", self.registration.scope);
 const appUrl = (path = "") => new URL(path, APP_ROOT).href;
 const FACE_GROUPS = [
-  ["rania", 9, true],
+  ["rania", 14, true],
   ["aysha", 2],
   ["birol", 7],
   ["dana", 2],
   ["gaya", 4],
-  ["hadi", 3],
+  ["hadi", 8],
   ["haidee", 7],
   ["hamster", 1],
-  ["hannah", 3],
-  ["hilton", 1],
+  ["hannah", 5],
+  ["hilton", 3],
   ["jenna", 2],
   ["karima", 4],
   ["lexi", 3],
@@ -23,10 +23,11 @@ const FACE_GROUPS = [
   ["puti", 8],
   ["raphael", 4],
   ["shanshan", 3],
-  ["soumen", 3],
+  ["soumen", 7],
   ["steve", 4],
   ["teo", 9],
-  ["victor", 1],
+  ["toni", 3],
+  ["victor", 2],
   ["zinong", 2],
 ];
 const FACE_ASSETS = FACE_GROUPS.flatMap(([slug, count, numberFirst = false]) =>

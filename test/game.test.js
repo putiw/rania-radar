@@ -65,11 +65,11 @@ test("buildTrials uses every supplied stimulus when counts match", () => {
 
 test("buildTrials selects 25 unique photos from the larger stimulus library", () => {
   const stimuli = [
-    ...Array.from({ length: 9 }, (_, index) => ({
+    ...Array.from({ length: 14 }, (_, index) => ({
       id: `rania-${index + 1}`,
       isTarget: true,
     })),
-    ...Array.from({ length: 79 }, (_, index) => ({
+    ...Array.from({ length: 96 }, (_, index) => ({
       id: `friend-${index + 1}`,
       isTarget: false,
     })),
