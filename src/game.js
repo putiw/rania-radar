@@ -1,7 +1,7 @@
 export const DEFAULT_CONFIG = Object.freeze({
   totalTrials: 25,
   targetTrials: 5,
-  minWaitMs: 1500,
+  minWaitMs: 0,
   maxWaitMs: 3000,
   displayMs: 500,
   responseWindowMs: 1500,

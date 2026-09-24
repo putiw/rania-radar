@@ -93,7 +93,7 @@ test("buildTrials selects 25 unique photos from the larger stimulus library", ()
 test("stimulus, response, and inter-trial timing match the experiment protocol", () => {
   assert.equal(DEFAULT_CONFIG.displayMs, 500);
   assert.equal(DEFAULT_CONFIG.responseWindowMs, 1500);
-  assert.equal(DEFAULT_CONFIG.minWaitMs, 1500);
+  assert.equal(DEFAULT_CONFIG.minWaitMs, 0);
   assert.equal(DEFAULT_CONFIG.maxWaitMs, 3000);
 });
 
