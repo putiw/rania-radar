@@ -317,21 +317,29 @@ function prepareTrial(runId = session.runId, waitMs = randomWait(config)) {
   session.timer = window.setTimeout(() => showStimulus(runId), waitMs);
 }
 
-function showStimulus(runId) {
+async function showStimulus(runId) {
   if (runId !== session.runId || session.phase !== "waiting") return;
   const trial = session.trials[session.currentIndex];
   const person = getPerson(trial.personId);
 
+  elements.faceFrame.classList.remove("is-visible");
   elements.faceImage.src = avatarSource(person);
+  try {
+    await elements.faceImage.decode();
+  } catch {
+    // The load event can still succeed on browsers without reliable decode().
+  }
+  if (runId !== session.runId || session.phase !== "waiting") return;
+
   elements.cue.hidden = false;
   elements.cue.textContent = "+";
   elements.gameStatus.textContent = "";
-  elements.faceFrame.classList.add("is-visible");
 
   window.requestAnimationFrame(() => {
     if (runId !== session.runId || session.phase !== "waiting") return;
     session.phase = "stimulus";
     session.shownAt = performance.now();
+    elements.faceFrame.classList.add("is-visible");
     session.imageTimer = window.setTimeout(() => {
       if (runId !== session.runId || session.phase !== "stimulus") return;
       elements.faceFrame.classList.remove("is-visible");
