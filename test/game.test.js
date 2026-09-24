@@ -90,8 +90,11 @@ test("buildTrials selects 25 unique photos from the larger stimulus library", ()
   assert.equal(new Set(trials.map((trial) => trial.personId)).size, 25);
 });
 
-test("stimuli are displayed for exactly 500 milliseconds", () => {
+test("stimulus, response, and inter-trial timing match the experiment protocol", () => {
   assert.equal(DEFAULT_CONFIG.displayMs, 500);
+  assert.equal(DEFAULT_CONFIG.responseWindowMs, 1500);
+  assert.equal(DEFAULT_CONFIG.minWaitMs, 1500);
+  assert.equal(DEFAULT_CONFIG.maxWaitMs, 3000);
 });
 
 test("outcome feedback distinguishes correct and incorrect responses", () => {

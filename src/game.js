@@ -1,9 +1,10 @@
 export const DEFAULT_CONFIG = Object.freeze({
   totalTrials: 25,
   targetTrials: 5,
-  minWaitMs: 700,
-  maxWaitMs: 1400,
+  minWaitMs: 1500,
+  maxWaitMs: 3000,
   displayMs: 500,
+  responseWindowMs: 1500,
   minValidReactionMs: 120,
 });
 
@@ -100,7 +101,7 @@ export function buildTrials({
 
 export function randomWait(config = DEFAULT_CONFIG, random = Math.random) {
   const range = config.maxWaitMs - config.minWaitMs;
-  return Math.round(config.minWaitMs + random() * range);
+  return Math.min(config.maxWaitMs, Math.floor(config.minWaitMs + random() * (range + 1)));
 }
 
 export function median(values) {

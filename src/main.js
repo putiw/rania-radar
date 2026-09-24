@@ -115,6 +115,7 @@ function createEmptySession() {
     shownAt: null,
     response: null,
     timer: null,
+    imageTimer: null,
     lastSummary: null,
     lastCumulativeSummary: null,
     completedRunNumber: null,
@@ -224,7 +225,9 @@ function showScreen(name) {
 
 function clearSessionTimer() {
   if (session.timer) window.clearTimeout(session.timer);
+  if (session.imageTimer) window.clearTimeout(session.imageTimer);
   session.timer = null;
+  session.imageTimer = null;
 }
 
 function resetFixationFeedback() {
@@ -287,7 +290,7 @@ async function startExperiment() {
   prepareTrial(runId);
 }
 
-function prepareTrial(runId = session.runId) {
+function prepareTrial(runId = session.runId, waitMs = randomWait(config)) {
   if (runId !== session.runId) return;
   clearSessionTimer();
 
@@ -311,7 +314,7 @@ function prepareTrial(runId = session.runId) {
   elements.progressPercent.textContent = `${percent}%`;
   elements.progressBar.style.width = `${percent}%`;
 
-  session.timer = window.setTimeout(() => showStimulus(runId), randomWait(config));
+  session.timer = window.setTimeout(() => showStimulus(runId), waitMs);
 }
 
 function showStimulus(runId) {
@@ -329,13 +332,19 @@ function showStimulus(runId) {
     if (runId !== session.runId || session.phase !== "waiting") return;
     session.phase = "stimulus";
     session.shownAt = performance.now();
+    session.imageTimer = window.setTimeout(() => {
+      if (runId !== session.runId || session.phase !== "stimulus") return;
+      elements.faceFrame.classList.remove("is-visible");
+      session.imageTimer = null;
+      if (!session.response) elements.gameStatus.textContent = "Response window open";
+    }, config.displayMs);
     session.timer = window.setTimeout(() => {
       const response = session.response;
       completeTrial(
         response?.outcome ?? (trial.isTarget ? "miss" : "correct-rejection"),
         response?.reactionMs ?? null,
       );
-    }, config.displayMs);
+    }, config.responseWindowMs);
   });
 }
 
@@ -374,7 +383,16 @@ function registerFalseStart(message) {
   elements.faceFrame.classList.remove("is-visible");
   showFixationFeedback("anticipation", message);
   elements.detectButton.setAttribute("aria-disabled", "true");
-  session.timer = window.setTimeout(() => prepareTrial(runId), 650);
+  scheduleNextTrial(runId, 650);
+}
+
+function scheduleNextTrial(runId, feedbackMs = 300) {
+  const interTrialMs = randomWait(config);
+  const visibleFeedbackMs = Math.min(feedbackMs, interTrialMs);
+  session.timer = window.setTimeout(
+    () => prepareTrial(runId, interTrialMs - visibleFeedbackMs),
+    visibleFeedbackMs,
+  );
 }
 
 function completeTrial(outcome, reactionMs = null) {
@@ -400,7 +418,7 @@ function completeTrial(outcome, reactionMs = null) {
   elements.progressBar.style.width = `${completedPercent}%`;
   elements.progressPercent.textContent = `${completedPercent}%`;
 
-  session.timer = window.setTimeout(() => prepareTrial(runId), 300);
+  scheduleNextTrial(runId);
 }
 
 function finishExperiment() {
