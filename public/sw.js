@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "rania-radar-";
-const CACHE_NAME = `${CACHE_PREFIX}v22`;
+const CACHE_NAME = `${CACHE_PREFIX}v23`;
 const FACE_ASSET_VERSION = "photos-6";
 const APP_ROOT = new URL("./", self.registration.scope);
 const appUrl = (path = "") => new URL(path, APP_ROOT).href;
